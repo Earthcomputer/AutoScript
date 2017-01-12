@@ -1,0 +1,10 @@
+key.autoscript.startScript=Start Script
+key.category.autoscript=AutoScript
+
+gui.startScript.title=Start/Stop Script
+gui.startScript.start=Start
+gui.startScript.stop=Stop
+gui.startScript.running=Running
+gui.startScript.notRunning=Not Running
+
+script.branchMine=Branch Mine

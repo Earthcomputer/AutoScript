@@ -1,0 +1,16 @@
+[
+{
+  "modid": "autoscript",
+  "name": "AutoScript",
+  "description": "Adds scripts for client-side automation of tasks in Minecraft",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Earthcomputer"],
+  "credits": "Earthcomputer",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
