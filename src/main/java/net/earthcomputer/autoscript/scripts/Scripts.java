@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import net.earthcomputer.autoscript.scripts.ScriptBranchMine;
+import net.earthcomputer.autoscript.scripts.branchmine.ScriptBranchMine;
 
 public class Scripts {
 
