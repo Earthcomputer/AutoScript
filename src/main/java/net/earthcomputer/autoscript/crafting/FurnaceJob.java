@@ -1,5 +1,6 @@
 package net.earthcomputer.autoscript.crafting;
 
+import net.earthcomputer.autoscript.InputBlocker;
 import net.earthcomputer.autoscript.job.Job;
 import net.earthcomputer.autoscript.scripts.ScriptInput;
 import net.minecraft.block.Block;
@@ -54,6 +55,7 @@ public class FurnaceJob extends Job {
 			} else {
 				Minecraft.getMinecraft().playerController.processRightClickBlock(player, Minecraft.getMinecraft().world,
 						furnacePos, rayTraceResult.sideHit, rayTraceResult.hitVec, EnumHand.MAIN_HAND);
+				InputBlocker.disableCloseContainer();
 				ticksWaited = 0;
 				state = EnumState.WAIT_OPEN_CONTAINER;
 			}
@@ -147,6 +149,7 @@ public class FurnaceJob extends Job {
 		if (outputSlot.getHasStack()) {
 			ScriptInput.shiftClick(openContainer, outputSlot);
 		}
+		InputBlocker.enableCloseContainer();
 		Minecraft.getMinecraft().player.closeScreen();
 	}
 

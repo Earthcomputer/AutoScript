@@ -1,6 +1,6 @@
 package net.earthcomputer.autoscript.scripts.branchmine;
 
-import net.earthcomputer.autoscript.AutoScript;
+import net.earthcomputer.autoscript.InputBlocker;
 import net.earthcomputer.autoscript.job.Job;
 import net.earthcomputer.autoscript.job.NeverEndingNopJob;
 import net.earthcomputer.autoscript.scripts.Script;
@@ -15,7 +15,7 @@ public class ScriptBranchMine extends Script {
 	@Override
 	public void onStart() {
 		stayAliveHelper = new StayAliveHelper();
-		AutoScript.startBlockingInput();
+		InputBlocker.startBlockingInput();
 		job.start();
 	}
 
@@ -30,7 +30,7 @@ public class ScriptBranchMine extends Script {
 
 	@Override
 	public void onStop() {
-		AutoScript.stopBlockingInput();
+		InputBlocker.stopBlockingInput();
 		job.stop();
 	}
 

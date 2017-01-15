@@ -8,11 +8,7 @@ import net.earthcomputer.autoscript.scripts.Script;
 import net.earthcomputer.autoscript.scripts.ScriptInput;
 import net.earthcomputer.autoscript.scripts.Scripts;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.MouseHelper;
-import net.minecraft.util.MovementInputFromOptions;
-import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
@@ -37,8 +33,6 @@ public class AutoScript {
 	public static final KeyBinding keyBindStartScript = new KeyBinding("key.autoscript.startScript",
 			KeyConflictContext.UNIVERSAL, KeyModifier.CONTROL, Keyboard.KEY_O, "key.category.autoscript");
 
-	private static boolean isBlockingInput = false;
-
 	@NetworkCheckHandler
 	public boolean checkConnect(Side otherSide, Map<String, String> otherSideMods) {
 		return true;
@@ -48,37 +42,13 @@ public class AutoScript {
 	public void preinit(FMLPreInitializationEvent e) {
 		ClientRegistry.registerKeyBinding(keyBindStartScript);
 		MinecraftForge.EVENT_BUS.register(this);
-		GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
-		registerBlockKey(gameSettings.keyBindInventory);
-		registerBlockKey(gameSettings.keyBindSwapHands);
-		registerBlockKey(gameSettings.keyBindDrop);
-		gameSettings.keyBindUseItem.setKeyConflictContext(
-				new KeyConflictContextBlockInput(gameSettings.keyBindUseItem.getKeyConflictContext()) {
-					@Override
-					public boolean isActive() {
-						return super.isActive() || ScriptInput.isRightClickPressed;
-					}
-				});
-		registerBlockKey(gameSettings.keyBindAttack);
-		registerBlockKey(gameSettings.keyBindPickBlock);
-		for (int i = 0; i < 9; i++) {
-			registerBlockKey(gameSettings.keyBindsHotbar[i]);
-		}
+		MinecraftForge.EVENT_BUS.register(InputBlocker.class);
+		InputBlocker.registerBlockKeys();
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent e) {
-		Minecraft.getMinecraft().mouseHelper = new MouseHelper() {
-			@Override
-			public void mouseXYChange() {
-				if (isBlockingInput) {
-					deltaX = 0;
-					deltaY = 0;
-				} else {
-					super.mouseXYChange();
-				}
-			}
-		};
+		InputBlocker.registerBlockingMouseHelper();
 	}
 
 	@SubscribeEvent
@@ -100,48 +70,6 @@ public class AutoScript {
 		for (Script script : Scripts.getScripts()) {
 			Scripts.stopScript(script);
 		}
-	}
-
-	public static ScriptInput startBlockingInput() {
-		isBlockingInput = true;
-		ScriptInput movementInput = new ScriptInput();
-		Minecraft.getMinecraft().player.movementInput = movementInput;
-		ScriptInput.startPlayerInventoryHack(Minecraft.getMinecraft().player);
-		return movementInput;
-	}
-
-	public static void stopBlockingInput() {
-		isBlockingInput = false;
-		Minecraft.getMinecraft().player.movementInput = new MovementInputFromOptions(
-				Minecraft.getMinecraft().gameSettings);
-		ScriptInput.stopPlayerInventoryHack(Minecraft.getMinecraft().player);
-	}
-
-	public static void registerBlockKey(KeyBinding keyBinding) {
-		keyBinding.setKeyConflictContext(new KeyConflictContextBlockInput(keyBinding.getKeyConflictContext()));
-	}
-
-	private static class KeyConflictContextBlockInput implements IKeyConflictContext {
-
-		private IKeyConflictContext parent;
-
-		public KeyConflictContextBlockInput(IKeyConflictContext parent) {
-			this.parent = parent;
-		}
-
-		@Override
-		public boolean isActive() {
-			return !isBlockingInput && parent.isActive();
-		}
-
-		@Override
-		public boolean conflicts(IKeyConflictContext other) {
-			if (other instanceof KeyConflictContextBlockInput) {
-				return conflicts(((KeyConflictContextBlockInput) other).parent);
-			}
-			return parent.conflicts(other);
-		}
-
 	}
 
 }

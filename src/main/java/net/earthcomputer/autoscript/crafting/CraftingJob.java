@@ -1,5 +1,6 @@
 package net.earthcomputer.autoscript.crafting;
 
+import net.earthcomputer.autoscript.InputBlocker;
 import net.earthcomputer.autoscript.job.Job;
 import net.earthcomputer.autoscript.scripts.ScriptInput;
 import net.minecraft.client.Minecraft;
@@ -57,6 +58,7 @@ public class CraftingJob extends Job {
 				Minecraft.getMinecraft().playerController.processRightClickBlock(Minecraft.getMinecraft().player,
 						Minecraft.getMinecraft().world, craftingTablePos, rayTraceResult.sideHit, rayTraceResult.hitVec,
 						EnumHand.MAIN_HAND);
+				InputBlocker.disableCloseContainer();
 				ticksWaited = 0;
 				state = EnumState.WAIT_OPEN_CRAFTING_TABLE;
 			}
@@ -139,6 +141,7 @@ public class CraftingJob extends Job {
 					}
 				}
 			}
+			InputBlocker.enableCloseContainer();
 			Minecraft.getMinecraft().player.closeScreen();
 		}
 	}
