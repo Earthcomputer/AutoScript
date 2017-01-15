@@ -6,6 +6,8 @@ import java.util.List;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import net.earthcomputer.autoscript.scripts.Script;
+import net.earthcomputer.autoscript.scripts.Scripts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;

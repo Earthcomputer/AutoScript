@@ -1,4 +1,4 @@
-package net.earthcomputer.autoscript;
+package net.earthcomputer.autoscript.scripts;
 
 import java.util.Collections;
 import java.util.List;

@@ -9,15 +9,19 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovementInput;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
-public class ScriptMovementInput extends MovementInput {
+public class ScriptInput extends MovementInput {
 
 	public static boolean isRightClickPressed = false;
 
@@ -27,9 +31,18 @@ public class ScriptMovementInput extends MovementInput {
 		KeyBinding.setKeyBindState(keyCode, true);
 		KeyBinding.onTick(keyCode);
 	}
-	
+
 	public static void updateTick() {
 		isRightClickPressed = false;
+	}
+
+	public static void faceBlock(BlockPos pos) {
+		EntityPlayerSP player = Minecraft.getMinecraft().player;
+		double dx = pos.getX() + 0.5 - player.posX;
+		double dz = pos.getZ() + 0.5 - player.posZ;
+		player.setLocationAndAngles(player.posX, player.posY, player.posZ,
+				(float) Math.toDegrees(MathHelper.atan2(dz, dx)),
+				(float) Math.toDegrees(MathHelper.atan2(pos.getY() + 0.5 - player.posY, Math.sqrt(dx * dx + dz * dz))));
 	}
 
 	public static boolean selectItemInInventory(EntityPlayerSP player, Predicate<ItemStack> predicate,
@@ -52,6 +65,48 @@ public class ScriptMovementInput extends MovementInput {
 		Minecraft.getMinecraft().playerController.windowClick(player.inventoryContainer.windowId,
 				items.get(items.size() - 1).slotNumber, player.inventory.currentItem, ClickType.SWAP, player);
 		return true;
+	}
+
+	public static void swapSlots(Container openContainer, Slot first, Slot second) {
+		PlayerControllerMP playerController = Minecraft.getMinecraft().playerController;
+		EntityPlayerSP player = Minecraft.getMinecraft().player;
+		boolean firstHadStack = first.getHasStack(), secondHadStack = second.getHasStack();
+		if (firstHadStack) {
+			playerController.windowClick(openContainer.windowId, first.slotNumber, 0, ClickType.PICKUP, player);
+		}
+		if (firstHadStack || secondHadStack) {
+			playerController.windowClick(openContainer.windowId, second.slotNumber, 0, ClickType.PICKUP, player);
+		}
+		if (secondHadStack) {
+			playerController.windowClick(openContainer.windowId, first.slotNumber, 0, ClickType.PICKUP, player);
+		}
+	}
+
+	public static int moveSome(Container openContainer, Slot from, Slot to, int amount) {
+		if (!from.getHasStack()) {
+			return 0;
+		}
+		PlayerControllerMP playerController = Minecraft.getMinecraft().playerController;
+		EntityPlayerSP player = Minecraft.getMinecraft().player;
+		int amountTransfered = amount;
+		if (from.getStack().getCount() <= amount) {
+			amountTransfered = from.getStack().getCount();
+			playerController.windowClick(openContainer.windowId, from.slotNumber, 0, ClickType.PICKUP, player);
+		} else {
+			for (int i = 0; i < amount; i++) {
+				playerController.windowClick(openContainer.windowId, from.slotNumber, 1, ClickType.PICKUP, player);
+			}
+		}
+		playerController.windowClick(openContainer.windowId, to.slotNumber, 0, ClickType.PICKUP, player);
+		return amountTransfered;
+	}
+
+	public static boolean shiftClick(Container container, Slot slot) {
+		ItemStack originalStack = slot.getStack().copy();
+		Minecraft.getMinecraft().playerController.windowClick(container.windowId, slot.slotNumber, 1,
+				ClickType.QUICK_MOVE, Minecraft.getMinecraft().player);
+		return slot.getStack().getItem() != originalStack.getItem()
+				|| slot.getStack().getItemDamage() != originalStack.getItemDamage();
 	}
 
 	public static void startPlayerInventoryHack(EntityPlayerSP player) {

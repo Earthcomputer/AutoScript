@@ -1,4 +1,4 @@
-package net.earthcomputer.autoscript;
+package net.earthcomputer.autoscript.scripts;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;

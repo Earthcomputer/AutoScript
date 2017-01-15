@@ -4,7 +4,9 @@ import java.util.Map;
 
 import org.lwjgl.input.Keyboard;
 
-import net.earthcomputer.autoscript.scripts.ScriptMovementInput;
+import net.earthcomputer.autoscript.scripts.Script;
+import net.earthcomputer.autoscript.scripts.ScriptInput;
+import net.earthcomputer.autoscript.scripts.Scripts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
@@ -54,7 +56,7 @@ public class AutoScript {
 				new KeyConflictContextBlockInput(gameSettings.keyBindUseItem.getKeyConflictContext()) {
 					@Override
 					public boolean isActive() {
-						return super.isActive() || ScriptMovementInput.isRightClickPressed;
+						return super.isActive() || ScriptInput.isRightClickPressed;
 					}
 				});
 		registerBlockKey(gameSettings.keyBindAttack);
@@ -88,7 +90,7 @@ public class AutoScript {
 			if (keyBindStartScript.isPressed()) {
 				Minecraft.getMinecraft().displayGuiScreen(new GuiStartScript(Minecraft.getMinecraft().currentScreen));
 			}
-			ScriptMovementInput.updateTick();
+			ScriptInput.updateTick();
 			Scripts.updateScripts();
 		}
 	}
@@ -100,12 +102,11 @@ public class AutoScript {
 		}
 	}
 
-	public static ScriptMovementInput startBlockingInput() {
-		System.out.println(Minecraft.getMinecraft().mouseHelper.getClass());
+	public static ScriptInput startBlockingInput() {
 		isBlockingInput = true;
-		ScriptMovementInput movementInput = new ScriptMovementInput();
+		ScriptInput movementInput = new ScriptInput();
 		Minecraft.getMinecraft().player.movementInput = movementInput;
-		ScriptMovementInput.startPlayerInventoryHack(Minecraft.getMinecraft().player);
+		ScriptInput.startPlayerInventoryHack(Minecraft.getMinecraft().player);
 		return movementInput;
 	}
 
@@ -113,7 +114,7 @@ public class AutoScript {
 		isBlockingInput = false;
 		Minecraft.getMinecraft().player.movementInput = new MovementInputFromOptions(
 				Minecraft.getMinecraft().gameSettings);
-		ScriptMovementInput.stopPlayerInventoryHack(Minecraft.getMinecraft().player);
+		ScriptInput.stopPlayerInventoryHack(Minecraft.getMinecraft().player);
 	}
 
 	public static void registerBlockKey(KeyBinding keyBinding) {
