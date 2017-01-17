@@ -1,13 +1,13 @@
 package net.earthcomputer.autoscript.scripts.stayalive.defense;
 
-import net.earthcomputer.autoscript.fakeplayer.EntityPlayerDelegate;
+import net.earthcomputer.autoscript.fake.EntityPlayerProxy;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 
 public class AIMoveWithinMeleeDistance extends EntityAIAttackMelee {
 
 	private double closestDistance;
 
-	public AIMoveWithinMeleeDistance(EntityPlayerDelegate player, double closestDistance) {
+	public AIMoveWithinMeleeDistance(EntityPlayerProxy player, double closestDistance) {
 		super(player, 1, true);
 		this.closestDistance = closestDistance;
 	}

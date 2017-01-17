@@ -7,7 +7,7 @@ import org.lwjgl.input.Mouse;
 
 import com.google.common.collect.Queues;
 
-import net.earthcomputer.autoscript.fakeplayer.EntityPlayerDelegate;
+import net.earthcomputer.autoscript.fake.EntityPlayerProxy;
 import net.earthcomputer.autoscript.scripts.ScriptInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -29,7 +29,7 @@ public class InputBlocker {
 
 	private static boolean isBlockingInput;
 	private static boolean isCloseContainerEnabled = true;
-	private static Deque<EntityPlayerDelegate> fakePlayers = Queues.newArrayDeque();
+	private static Deque<EntityPlayerProxy> fakePlayers = Queues.newArrayDeque();
 
 	public static void registerBlockKeys() {
 		GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
@@ -90,7 +90,7 @@ public class InputBlocker {
 		isCloseContainerEnabled = true;
 	}
 
-	public static void pushFakePlayer(EntityPlayerDelegate fakePlayer) {
+	public static void pushFakePlayer(EntityPlayerProxy fakePlayer) {
 		fakePlayers.push(fakePlayer);
 	}
 

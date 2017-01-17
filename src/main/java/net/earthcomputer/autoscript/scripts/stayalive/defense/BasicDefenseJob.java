@@ -9,7 +9,7 @@ import com.google.common.collect.Multimap;
 import net.earthcomputer.autoscript.InputBlocker;
 import net.earthcomputer.autoscript.crafting.CraftingPlanner;
 import net.earthcomputer.autoscript.crafting.DefaultHelperBlockProvider;
-import net.earthcomputer.autoscript.fakeplayer.EntityPlayerDelegate;
+import net.earthcomputer.autoscript.fake.EntityPlayerProxy;
 import net.earthcomputer.autoscript.job.Job;
 import net.earthcomputer.autoscript.scripts.ScriptInput;
 import net.earthcomputer.autoscript.scripts.stayalive.StayAliveHelper;
@@ -28,7 +28,7 @@ public class BasicDefenseJob extends Job {
 
 	protected StayAliveHelper stayAliveHelper;
 	protected EntityMob opponent;
-	protected EntityPlayerDelegate fakePlayer;
+	protected EntityPlayerProxy fakePlayer;
 
 	public BasicDefenseJob(StayAliveHelper stayAliveHelper, EntityMob opponent) {
 		this.stayAliveHelper = stayAliveHelper;
@@ -85,7 +85,7 @@ public class BasicDefenseJob extends Job {
 			}
 		}
 		final double closestDist = player.width + opponent.width + 1;
-		fakePlayer = new EntityPlayerDelegate(player);
+		fakePlayer = new EntityPlayerProxy(player);
 		fakePlayer.tasks.addTask(1, new AIStayOutOfRange(fakePlayer, opponent, closestDist, closestDist * 1.5));
 		fakePlayer.tasks.addTask(2, new AIMoveWithinMeleeDistance(fakePlayer, closestDist));
 		fakePlayer.setAttackTarget(opponent);

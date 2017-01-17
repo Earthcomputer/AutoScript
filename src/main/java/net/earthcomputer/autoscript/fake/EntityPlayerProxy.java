@@ -1,14 +1,15 @@
-package net.earthcomputer.autoscript.fakeplayer;
+package net.earthcomputer.autoscript.fake;
 
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.EntityCreature;
 
-public class EntityPlayerDelegate extends EntityCreature {
+public class EntityPlayerProxy extends EntityCreature {
 
 	private EntityPlayerSP player;
 
-	public EntityPlayerDelegate(EntityPlayerSP player) {
-		super(player.world);
+	public EntityPlayerProxy(EntityPlayerSP player) {
+		super(new WorldServerProxy((WorldClient) player.world));
 		this.player = player;
 		copyLocationAndAnglesFrom(player);
 	}
@@ -16,9 +17,7 @@ public class EntityPlayerDelegate extends EntityCreature {
 	@Override
 	public void onUpdate() {
 		copyLocationAndAnglesFrom(player);
-		world.isRemote = false;
 		super.onUpdate();
-		world.isRemote = true;
 		player.moveForward = moveForward;
 		player.moveStrafing = moveStrafing;
 		player.setJumping(isJumping);
