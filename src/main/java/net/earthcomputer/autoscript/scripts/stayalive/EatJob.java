@@ -48,7 +48,6 @@ public class EatJob extends Job {
 		if (!mc.inGameHasFocus) {
 			mc.playerController.onStoppedUsingItem(mc.player);
 		}
-		stayAliveHelper.setEating(false);
 	}
 
 	@Override
@@ -70,6 +69,12 @@ public class EatJob extends Job {
 		}
 		lastHunger = Minecraft.getMinecraft().player.getFoodStats().getFoodLevel();
 		ticksWaited = 0;
+	}
+
+	@Override
+	protected void stopExecute() {
+		pauseExecute();
+		stayAliveHelper.setEating(false);
 	}
 
 }

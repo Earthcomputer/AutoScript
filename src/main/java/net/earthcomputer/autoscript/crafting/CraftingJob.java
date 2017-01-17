@@ -43,7 +43,14 @@ public class CraftingJob extends Job {
 	@Override
 	protected void resumeExecute() {
 		if (requiresCraftingTable()) {
+			if (!helperBlocks.tryPlaceCraftingTable(this)) {
+				return;
+			}
 			BlockPos craftingTablePos = helperBlocks.getCraftingTablePos();
+			if (craftingTablePos == null) {
+				fail();
+				return;
+			}
 			ScriptInput.faceBlock(craftingTablePos);
 			RayTraceResult rayTraceResult = Minecraft.getMinecraft().player
 					.rayTrace(Minecraft.getMinecraft().playerController.getBlockReachDistance(), 0);

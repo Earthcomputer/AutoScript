@@ -39,7 +39,14 @@ public class FurnaceJob extends Job {
 
 	@Override
 	protected void resumeExecute() {
+		if (!helperBlocks.tryPlaceFurnace(this)) {
+			return;
+		}
 		BlockPos furnacePos = helperBlocks.getFurnacePos();
+		if (furnacePos == null) {
+			fail();
+			return;
+		}
 		ScriptInput.faceBlock(furnacePos);
 		EntityPlayerSP player = Minecraft.getMinecraft().player;
 		RayTraceResult rayTraceResult = player

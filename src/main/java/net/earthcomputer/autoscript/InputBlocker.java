@@ -1,8 +1,13 @@
 package net.earthcomputer.autoscript;
 
+import java.util.Deque;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import com.google.common.collect.Queues;
+
+import net.earthcomputer.autoscript.fakeplayer.EntityPlayerDelegate;
 import net.earthcomputer.autoscript.scripts.ScriptInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -13,6 +18,9 @@ import net.minecraft.util.MovementInputFromOptions;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class InputBlocker {
 
@@ -21,6 +29,7 @@ public class InputBlocker {
 
 	private static boolean isBlockingInput;
 	private static boolean isCloseContainerEnabled = true;
+	private static Deque<EntityPlayerDelegate> fakePlayers = Queues.newArrayDeque();
 
 	public static void registerBlockKeys() {
 		GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
@@ -81,6 +90,14 @@ public class InputBlocker {
 		isCloseContainerEnabled = true;
 	}
 
+	public static void pushFakePlayer(EntityPlayerDelegate fakePlayer) {
+		fakePlayers.push(fakePlayer);
+	}
+
+	public static void popFakePlayer() {
+		fakePlayers.pop();
+	}
+
 	@SubscribeEvent
 	public static void onGuiKeyInput(GuiScreenEvent.KeyboardInputEvent.Pre e) {
 		if (isBlockingInput && e.getGui() instanceof GuiContainer) {
@@ -114,6 +131,20 @@ public class InputBlocker {
 				}
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public static void onPlayerTick(PlayerTickEvent e) {
+		if (fakePlayers.isEmpty()) {
+			return;
+		}
+		if (e.side != Side.CLIENT) {
+			return;
+		}
+		if (e.phase != Phase.START) {
+			return;
+		}
+		fakePlayers.peek().onUpdate();
 	}
 
 	private static class KeyConflictContextBlockInput implements IKeyConflictContext {
